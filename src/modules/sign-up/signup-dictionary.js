@@ -1,7 +1,7 @@
 export default {
     step: {
         BEGIN: {
-            default_message: 'Olá, vamos iniciar o seu cadastro no To no Caixa!'
+            default_message: 'Olá, vamos iniciar o seu cadastro!'
         },
         AWAITING_NAME: {
             default_message: 'Qual o nome do seu estabelecimento?'
@@ -25,6 +25,16 @@ export default {
         COMPLETED: {
             default_message: 'Você já está cadastrado. Envie "vender" para começar a registrar vendas.'
         }
-    }
-
+    },
+    logo: {
+        default_message: `
+            ::::::::::: ::::::::        ::::    :::  ::::::::         ::::::::      :::     ::::::::::: :::    :::     :::     
+                :+:    :+:    :+:       :+:+:   :+: :+:    :+:       :+:    :+:   :+: :+:       :+:     :+:    :+:   :+: :+:   
+                +:+    +:+    +:+       :+:+:+  +:+ +:+    +:+       +:+         +:+   +:+      +:+      +:+  +:+   +:+   +:+  
+                +#+    +#+    +:+       +#+ +:+ +#+ +#+    +:+       +#+        +#++:++#++:     +#+       +#++:+   +#++:++#++: 
+                +#+    +#+    +#+       +#+  +#+#+# +#+    +#+       +#+        +#+     +#+     +#+      +#+  +#+  +#+     +#+ 
+                #+#    #+#    #+#       #+#   #+#+# #+#    #+#       #+#    #+# #+#     #+#     #+#     #+#    #+# #+#     #+# 
+                ###     ########        ###    ####  ########         ########  ###     ### ########### ###    ### ###     ###
+        `
+    },
 }

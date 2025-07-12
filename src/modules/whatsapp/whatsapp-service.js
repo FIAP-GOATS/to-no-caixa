@@ -25,7 +25,8 @@ export default class WhatsappService {
             delay_ms=0
         } = opts
 
-        await this.sleep(delay_ms)
+        if (delay_ms > 0) 
+            await this.sleep(delay_ms);
         this.client.sendMessage(to, content.toString())
     }
 

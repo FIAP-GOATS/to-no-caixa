@@ -43,7 +43,7 @@ A comunicação entre módulos é feita por injeção de dependências.
 
 1. Suba o banco de dados PostgreSQL:
 
-    docker-compose -f docker/docker-compose.yaml up -d
+    docker-compose --env-file ./.env -f docker/docker-compose.yaml up -d
 
 ## Rodando a aplicação
 

@@ -21,6 +21,11 @@ export default class SignupService {
         switch (company.registrationStep) {
             case 'BEGIN':
                 this.whatsappService.sendMessage({
+                    content: signupDictionary.logo.default_message,
+                    to: senderNumber
+                })
+
+                this.whatsappService.sendMessage({
                     content: signupDictionary.step.BEGIN.default_message,
                     to: senderNumber
                 })
@@ -43,7 +48,10 @@ export default class SignupService {
                 
                 this.whatsappService.sendMessage({
                     content: signupDictionary.step.AWAITING_EMAIL.default_message,
-                    to: senderNumber
+                    to: senderNumber,
+                    opts: {
+                        delay_ms: 1500
+                    }
                 })
                 return
             case 'AWAITING_EMAIL':
@@ -53,7 +61,10 @@ export default class SignupService {
 
                 this.whatsappService.sendMessage({
                     content: signupDictionary.step.AWAITING_CNPJ.default_message,
-                    to: senderNumber
+                    to: senderNumber,
+                    opts: {
+                        delay_ms: 1500
+                    }
                 })
                 return
             case 'AWAITING_CNPJ':
@@ -63,7 +74,10 @@ export default class SignupService {
 
                 this.whatsappService.sendMessage({
                     content: signupDictionary.step.AWAITING_TYPE.default_message,
-                    to: senderNumber
+                    to: senderNumber,
+                    opts: {
+                        delay_ms: 1500
+                    }
                 })
                 return
             case 'AWAITING_TYPE':
@@ -73,7 +87,10 @@ export default class SignupService {
                 
                 this.whatsappService.sendMessage({
                     content: signupDictionary.step.AWAITING_ADRESS.default_message,
-                    to: senderNumber
+                    to: senderNumber,
+                    opts: {
+                        delay_ms: 1500
+                    }
                 })
                 return
             case 'AWAITING_ADRESS': 
@@ -83,12 +100,25 @@ export default class SignupService {
 
                 this.whatsappService.sendMessage({
                     content: signupDictionary.step.COMPLETED.default_message,
-                    to: senderNumber
+                    to: senderNumber,
+                    opts: {
+                        delay_ms: 1500
+                    }
                 })
 
                 return
             // case 'AWAITING_PRODUCTS':
             //     return { message: this.dictionary.AWAITING_PROUCTS.default_message, completed: true }
+
+            case 'COMPLETED':
+                this.whatsappService.sendMessage({
+                    content: signupDictionary.step.COMPLETED.default_message,
+                    to: senderNumber,
+                    opts: {
+                        delay_ms: 1500
+                    }
+                })
+                return
             default:
                 return 
         }

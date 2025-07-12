@@ -1,7 +1,7 @@
 import pkg from "whatsapp-web.js"
 const { Client, LocalAuth } = pkg
 import WhatsappService from "./whatsapp-service.js"
-import * as qrcode from 'qrcode-terminal';
+import qrcode from 'qrcode-terminal';
 
 
 const gWhatsappInstance = async ({
