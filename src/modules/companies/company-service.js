@@ -1,5 +1,7 @@
 import { toCamelCase } from "../../util.js";
 
+import { Logger } from '../../logger.js';
+
 export default class CommpanyService {
     constructor({
         companyRepository
@@ -23,13 +25,13 @@ export default class CommpanyService {
 
     async update({ company }) {
         const updatedCompany = this.companyRepository.update({company}) 
-
+        Logger.info(`Company updated: ${updatedCompany.id}`);
         return toCamelCase(updatedCompany)
     }
 
     async create({ company }) {
         const createdCompany = await this.companyRepository.create({ company });
-
+        Logger.info(`Company created: ${createdCompany.id}`);
         return toCamelCase(createdCompany)
     }
 

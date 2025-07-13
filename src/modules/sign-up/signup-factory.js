@@ -1,4 +1,5 @@
 import SignupService from "./signupService.js"
+import { Logger } from '../../logger.js';
 
 const gSignupInstance = ({
     whatsappService,

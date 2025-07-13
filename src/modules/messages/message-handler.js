@@ -1,3 +1,5 @@
+import { Logger } from '../../logger.js';
+
 export default class MessageHandler {
     constructor ({
         companyService,
@@ -9,15 +11,16 @@ export default class MessageHandler {
 
     listenWhatsapp({ whatsappService }) {
         whatsappService.client.on('message', async (message) => {
-            console.log(`📩 Message received from ${message.from}: ${message.body}`)
+            Logger.info(`Received message from ${message.from}: ${message.body}`);
             
             this.handle({ message })
         });
+        Logger.info('Listening for WhatsApp messages...');
     }
 
     async handle({ message }) {
         const company = await this.companyService.find.byNumber({ number: message.from })
-        if(!company || company.registerStatus != 'COMPLETED') {
+        if(!company || company.registrationStep != 'COMPLETED') {
             this.signupService.process({ message })
         }
     }

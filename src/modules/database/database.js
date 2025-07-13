@@ -1,6 +1,8 @@
 import  pkg  from 'pg';
 const { Pool } = pkg;
 
+import { Logger } from '../../logger.js';
+
 export default class Database {
     constructor({
         user,
@@ -21,9 +23,9 @@ export default class Database {
     async init() {
         try {
             await this.pool.query('SELECT 1');
-            console.log('✅ Database connected');
+            Logger.info('Database connection established successfully');
         } catch (err) {
-            console.error('❌ Database connection failed:', err);
+            Logger.error('Database connection failed \n' + err.message);
             throw err;
         }
     }

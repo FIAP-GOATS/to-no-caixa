@@ -3,6 +3,8 @@ const { Client, LocalAuth } = pkg
 import WhatsappService from "./whatsapp-service.js"
 import qrcode from 'qrcode-terminal';
 
+import { Logger } from '../../logger.js';
+
 
 const gWhatsappInstance = async ({
     db
@@ -22,7 +24,7 @@ const gWhatsappInstance = async ({
 
   await new Promise((resolve) => {
     whatsappService.client.on('ready', () => {
-      console.log('✅ Bot connected to whatsapp');
+      Logger.info('WhatsApp client is ready');
       resolve();
     });
     whatsappService.init()

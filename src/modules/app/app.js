@@ -3,6 +3,7 @@ import Database from "../database/database.js";
 import MessageHandler from "../messages/message-handler.js";
 import { gCompanyInstance } from "../companies/company-factory.js";
 import { gSignupInstance } from "../sign-up/signup-factory.js";
+import { Logger } from '../../logger.js';
 
 
 export default class App {
@@ -13,7 +14,7 @@ export default class App {
   }
 
   async init() {
-    console.log(`${this.name} initialized with version ${this.version}`);
+    Logger.info('Initializing application...');
 
     const db = new Database({
       user: process.env.POSTGRES_USER,
@@ -34,6 +35,8 @@ export default class App {
 
     const messageHandler = new MessageHandler({ signupService, companyService })
     messageHandler.listenWhatsapp({ whatsappService })
+
+    Logger.info('Application started successfully');
   }
 
 

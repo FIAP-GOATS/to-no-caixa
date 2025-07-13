@@ -1,3 +1,5 @@
+import { Logger } from '../../logger.js';
+
 export default class WhatsappService {
     constructor({
         messageRepository,
@@ -12,8 +14,8 @@ export default class WhatsappService {
     }
 
     init() {
-        console.log(`${this.name} initialized with version ${this.version}`);
         this.client.initialize()
+        Logger.info('WhatsApp service initialized');
     }
 
     async sendMessage({
@@ -28,6 +30,7 @@ export default class WhatsappService {
         if (delay_ms > 0) 
             await this.sleep(delay_ms);
         this.client.sendMessage(to, content.toString())
+        Logger.info(`Message sent to ${to}: ${content}`);
     }
 
     sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));

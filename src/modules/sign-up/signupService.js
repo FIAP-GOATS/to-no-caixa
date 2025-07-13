@@ -1,5 +1,5 @@
 import signupDictionary from "./signup-dictionary.js"
-
+import { Logger } from '../../logger.js';
 export default class SignupService {
     constructor ({
         whatsappService,
@@ -18,6 +18,7 @@ export default class SignupService {
             company = await this.companyService.create({ company: { registrationNumber: senderNumber } })
         }
 
+        Logger.info(`Processing signup for company: ${company.registrationNumber}, current step: ${company.registrationStep}`);
         switch (company.registrationStep) {
             case 'BEGIN':
                 this.whatsappService.sendMessage({
