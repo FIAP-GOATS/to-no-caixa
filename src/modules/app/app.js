@@ -1,6 +1,6 @@
 import { gWhatsappInstance } from "../whatsapp/whatsapp-factory.js"
 import Database from "../database/database.js";
-import MessageHandler from "../messages/message-handler.js";
+import MessageHandler from "../handlers/message-handler.js";
 import { gCompanyInstance } from "../companies/company-factory.js";
 import { gSignupInstance } from "../sign-up/signup-factory.js";
 import { Logger } from '../../logger.js';
