@@ -12,3 +12,22 @@ CREATE TABLE companies (
   registration_step TEXT NOT NULL DEFAULT 'BEGIN',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE suppliers (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  cnpj VARCHAR(18) UNIQUE,         -- formato 00.000.000/0000-00
+  cpf VARCHAR(14) UNIQUE,          -- formato 000.000.000-00
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT chk_document CHECK (cnpj IS NOT NULL OR cpf IS NOT NULL)  -- CPF ou CNPJ deve estar preenchido
+);
+
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    inventory INT NOT NULL DEFAULT 0,
+    cost_price DECIMAL(10, 2) NOT NULL,  -- Preço de custo
+    sale_price DECIMAL(10, 2) NOT NULL,  -- Preço de venda
+    supplier_name VARCHAR(100),LLLL
+    FOREIGN KEY (supplier_name) REFERENCES suppliers(name)
+);
