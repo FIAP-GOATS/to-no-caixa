@@ -21,10 +21,6 @@ export default class SignupService {
         Logger.info(`Processing signup for company: ${company.registrationNumber}, current step: ${company.registrationStep}`);
         switch (company.registrationStep) {
             case 'BEGIN':
-                this.whatsappService.sendMessage({
-                    content: signupDictionary.logo.default_message,
-                    to: senderNumber
-                })
 
                 this.whatsappService.sendMessage({
                     content: signupDictionary.step.BEGIN.default_message,
