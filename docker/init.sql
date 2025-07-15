@@ -28,6 +28,6 @@ CREATE TABLE products (
     inventory INT NOT NULL DEFAULT 0,
     cost_price DECIMAL(10, 2) NOT NULL,  -- Preço de custo
     sale_price DECIMAL(10, 2) NOT NULL,  -- Preço de venda
-    supplier_name VARCHAR(100),LLLL
-    FOREIGN KEY (supplier_name) REFERENCES suppliers(name)
+    supplier_name VARCHAR(100),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
 );
