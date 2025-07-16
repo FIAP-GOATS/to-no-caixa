@@ -1,6 +1,6 @@
 # To No Caixa
 
-Sistema para gerenciamento de vendas e cadastro de estabelecimentos via WhatsApp.
+Pequenos negócios enfrentam dificuldades com ERPs tradicionais por serem caros, complexos e pouco acessíveis, o que leva muitos a ainda controlarem vendas, estoque e finanças de forma manual e desorganizada. Nossa solução é um ERP completo e fácil de usar, totalmente operado via WhatsApp, que permite ao empreendedor gerenciar estoque, registrar vendas, acompanhar o fluxo de caixa e acessar relatórios, tudo por comandos simples e direto no aplicativo que ele já usa no dia a dia.
 
 ## Estado de desenvolvimento
 
@@ -43,7 +43,8 @@ A comunicação entre módulos é feita por injeção de dependências.
 
 1. Suba o banco de dados PostgreSQL:
 
-    ``docker-compose --env-file ./.env -f docker/docker-compose.yaml up -d``
+    ```sh
+    docker-compose --env-file ./.env -f docker/docker-compose.yaml up -d
 
 ## Rodando a aplicação
 
