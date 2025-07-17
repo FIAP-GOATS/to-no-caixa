@@ -10,13 +10,11 @@ export default class SignupService {
   }
 
   async sendInvalidAndRetry(step, senderNumber) {
-    // Envia a mensagem de erro de validação.
     await this.whatsappService.sendMessage({
       content: signupDictionary.step[step].invalid_message,
       to: senderNumber,
     });
 
-    // Envia a mensagem padrão de solicitação novamente.
     await this.whatsappService.sendMessage({
       content: signupDictionary.step[step].default_message,
       to: senderNumber,

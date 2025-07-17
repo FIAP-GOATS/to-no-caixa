@@ -3,6 +3,7 @@ import Database from "../database/database.js";
 import MessageHandler from "../handlers/message-handler.js";
 import { gCompanyInstance } from "../companies/company-factory.js";
 import { gSignupInstance } from "../sign-up/signup-factory.js";
+import { gAiInstance } from "../AI/ai_factory.js";
 import { Logger } from '../../logger.js';
 
 
@@ -31,13 +32,12 @@ export default class App {
   async startup({ db }) {    
     const { companyService } = gCompanyInstance({ db })
     const { whatsappService } = await gWhatsappInstance({  });
-    const { signupService } = gSignupInstance({ whatsappService, companyService }) 
+    const { signupService } = gSignupInstance({ whatsappService, companyService })
+    const {aiService} = gAiInstance() 
 
-    const messageHandler = new MessageHandler({ signupService, companyService })
-    messageHandler.listenWhatsapp({ whatsappService })
+    const messageHandler = new MessageHandler({ signupService, companyService, whatsappService, aiService })
+    messageHandler.listenWhatsapp()
 
     Logger.info('Application started successfully');
   }
-
-
 }

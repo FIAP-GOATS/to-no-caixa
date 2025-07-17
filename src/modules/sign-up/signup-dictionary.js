@@ -39,7 +39,7 @@ export default {
             invalid_message: 'Ops... O CEP informado é inválido. Por favor, informe um CEP válido.'
         },
         COMPLETED: {
-            default_message: 'Você já está cadastrado. Envie "vender" para começar a registrar vendas.'
+            default_message: 'Você já está cadastrado. Cadastre seus fornecedores, produtos e comece a vender!'
         }
     },
     logo: {
