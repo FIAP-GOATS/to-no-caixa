@@ -1,12 +1,15 @@
 import fetch from 'node-fetch';
 
 export default class AIService {
-constructor() {
-    this.apiKey = process.env.GPT_API_KEY;
-    this.apiUrl = 'https://api.openai.com/v1/chat/completions';
+constructor({
+    apiKey,
+    apiUrl
+}) {
+    this.apiKey = apiKey;
+    this.apiUrl = apiUrl;
 }
 
-async getAssistantResponse(systemPrompt, userPrompt) {
+async getAssistantResponse({ systemPrompt, userPrompt }) {
     
     const response = await fetch(this.apiUrl, {
         method: 'POST',

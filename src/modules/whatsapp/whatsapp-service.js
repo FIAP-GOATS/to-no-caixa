@@ -28,12 +28,17 @@ export default class WhatsappService {
         } = opts
 
         if (delay_ms > 0) 
-            await this.sleep(delay_ms);
+            await this.helpers.sleep(delay_ms);
         this.client.sendMessage(to, content.toString())
         Logger.info(`Message sent to ${to}: ${content}`);
     }
 
-    sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    helpers = {
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    }
+    
 
 
 }

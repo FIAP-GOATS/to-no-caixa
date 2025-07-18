@@ -3,7 +3,7 @@ import Database from "../database/database.js";
 import MessageHandler from "../handlers/message-handler.js";
 import { gCompanyInstance } from "../companies/company-factory.js";
 import { gSignupInstance } from "../sign-up/signup-factory.js";
-import { gAiInstance } from "../AI/ai_factory.js";
+import { gAiInstance } from "../AI/ai-factory.js";
 import { Logger } from '../../logger.js';
 
 
@@ -33,10 +33,13 @@ export default class App {
     const { companyService } = gCompanyInstance({ db })
     const { whatsappService } = await gWhatsappInstance({  });
     const { signupService } = gSignupInstance({ whatsappService, companyService })
-    const {aiService} = gAiInstance() 
+    const {aiService} = gAiInstance({ 
+      apiKey: process.env.GPT_API_KEY, 
+      apiUrl: 'https://api.openai.com/v1/chat/completions'
+    }) 
 
     const messageHandler = new MessageHandler({ signupService, companyService, whatsappService, aiService })
-    messageHandler.listenWhatsapp()
+    messageHandler.init()
 
     Logger.info('Application started successfully');
   }

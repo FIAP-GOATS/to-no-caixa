@@ -25,6 +25,17 @@ export default class SignupService {
   }
 
   async process({ message }) {
+
+    //>> This validation handle the situation when the client(a number) made the first interaction with the bot. 
+    //>  For some reason, the whatsapp lib returns a message.body like " ", yes a string with a space or some unknown char.
+    //>  The current code solve it but needs to be replaced in the future for something more robust.
+    //>  Theres a lot of talk about it in github and reddit. Maybe it occurs because the "waiting for this message, please wait" type of message. Its like if whatsapp deal with the two numbers before make the message available.
+    //>> For better analysis, debug the app and simulate the situation to get the entire Message obj and see if there is some info. 
+    if (!message || !message.body || message.body.trim() === ""){
+      Logger.info('Empty message received, aborting process...')
+      return
+    }
+
     const senderNumber = message.from;
     const messageContent = message.body.trim();
 

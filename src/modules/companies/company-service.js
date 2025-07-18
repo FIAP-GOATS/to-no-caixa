@@ -24,7 +24,7 @@ export default class CommpanyService {
     }
 
     async update({ company }) {
-        const updatedCompany = this.companyRepository.update({company}) 
+        const updatedCompany = await this.companyRepository.update({company}) 
         Logger.info(`Company updated: ${updatedCompany.id}`);
         return toCamelCase(updatedCompany)
     }

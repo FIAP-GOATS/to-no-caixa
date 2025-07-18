@@ -9,6 +9,11 @@ export default class MessageHandler {
     this.aiService = aiService;
   }
 
+  init() {
+    this.listenWhatsapp()
+    Logger.info("Message Handler initialized successfully")
+  }
+
   listenWhatsapp() {
     this.whatsappService.client.on("message", async (message) => {
       Logger.info(`Received message from ${message.from}: ${message.body}`);
@@ -24,19 +29,18 @@ export default class MessageHandler {
     });
     if (!company || company.registrationStep != "COMPLETED") {
       this.signupService.process({ message });
+      return
     }
 
-    
     let customerServiceAssistantResponse =
-      await this.aiService.getAssistantResponse(
-        prompts.customer_service_prompt,
-        message.body
-      );
+      await this.aiService.getAssistantResponse({
+        systemPrompt: prompts.customer_service_prompt,
+        userPrompt: message.body
+    });
 
     this.whatsappService.sendMessage({
       to: message.from,
       content: customerServiceAssistantResponse,
     });
-
   }
 }
