@@ -4,8 +4,8 @@ import MessageHandler from "../handlers/message-handler.js";
 import { gCompanyInstance } from "../companies/company-factory.js";
 import { gSignupInstance } from "../sign-up/signup-factory.js";
 import { gAiInstance } from "../AI/ai-factory.js";
+import { gCustomerInstance } from "../customer/customer-factory.js";
 import { Logger } from '../../logger.js';
-
 
 export default class App {
   constructor() {
@@ -37,8 +37,17 @@ export default class App {
       apiKey: process.env.GPT_API_KEY, 
       apiUrl: 'https://api.openai.com/v1/chat/completions'
     }) 
+    const {customerService} = gCustomerInstance({aiService, whatsappService})
 
-    const messageHandler = new MessageHandler({ signupService, companyService, whatsappService, aiService })
+    const services = {
+      signupService,
+      companyService,
+      whatsappService,
+      aiService,
+      customerService
+    }
+
+    const messageHandler = new MessageHandler({ services })
     messageHandler.init()
 
     Logger.info('Application started successfully');
