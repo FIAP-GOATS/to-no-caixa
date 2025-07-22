@@ -37,23 +37,23 @@ export default class MessageHandler {
 
     switch(response.interactionAnalysys){
       case "CADASTRAR PRODUTO":
-        // Lógica de cadastrar produto
+        // this.productService.process({ message })
         break
       case "CADASTRAR FORNECEDOR":
-        // Lógica de cadastrar fornecedor
+        // this.supplyService.process({ message })
         break
       case "ABRIR CAIXA":
-        // Lógica de abrir caixa
+        // this.salleService.open({ timestamp })
         break 
       case "VENDER":
-        // Lógica de venda
+        // this.salleService.process({ message })
         // Deve haver injeção de contexto, caso o assistente anterior possui dados sobre a venda.
         break
       case "CANCELAR VENDA":
-        // Lógica de cancelar venda
+        // this.salleService.cancel()
         break
       case "FECHAR CAIXA":
-        // Lógica de fechar caixa
+        // this.salleService.close({ timestamp })
         break
       default:
         // Lógica de quando o agente não escolher nenhum fluxo
