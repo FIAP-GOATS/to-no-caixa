@@ -25,10 +25,11 @@ export default class CustomerService {
     for (let i = 0; i < limitedChunks.length; i++) {
       await this.whatsappService.sendMessage({
         to: message.from,
-        content: limitedChunks[i] + (i < limitedChunks.length - 1 ? "!" : ""), // Adiciona ponto de exclamação se não for a última frase
+        content: limitedChunks[i] + (i < limitedChunks.length - 1 ? "!" : ""), // Adiciona ponto de exclamação se não for a última frase,
+        opts: {
+          delay_ms: 800
+        }
       });
-      // Intervalo entre as mensagens para não parecer spam
-      await new Promise((resolve) => setTimeout(resolve, 800));
     }
 
     // Agente que analisa a resposta completa do assistente e decide o fluxo.

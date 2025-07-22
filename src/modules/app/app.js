@@ -33,11 +33,11 @@ export default class App {
     const { companyService } = gCompanyInstance({ db })
     const { whatsappService } = await gWhatsappInstance({  });
     const { signupService } = gSignupInstance({ whatsappService, companyService })
-    const {aiService} = gAiInstance({ 
+    const { aiService } = gAiInstance({ 
       apiKey: process.env.GPT_API_KEY, 
       apiUrl: 'https://api.openai.com/v1/chat/completions'
     }) 
-    const {customerService} = gCustomerInstance({aiService, whatsappService})
+    const { customerService } = gCustomerInstance({ aiService, whatsappService })
 
     const services = {
       signupService,
