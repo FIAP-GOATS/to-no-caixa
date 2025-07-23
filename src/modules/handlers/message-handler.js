@@ -8,6 +8,7 @@ export default class MessageHandler {
     this.whatsappService = services.whatsappService;
     this.aiService = services.aiService;
     this.customerService = services.customerService;
+    this.supplierRegistrationService = services.supplierRegistrationService
   }
 
   init() {
@@ -40,14 +41,16 @@ export default class MessageHandler {
         // this.productService.process({ message })
         break
       case "CADASTRAR FORNECEDOR":
-        // this.supplyService.process({ message })
+        this.supplierRegistrationService.process({message})
         break
       case "ABRIR CAIXA":
         // this.salleService.open({ timestamp })
         break 
+      case "ATUALIZAR ESTOQUE":
+        break
       case "VENDER":
         // this.salleService.process({ message })
-        // Deve haver injeção de contexto, caso o assistente anterior possui dados sobre a venda.
+        // Deve haver injeção de contexto, caso o assistente anterior possuia dados sobre a venda.
         break
       case "CANCELAR VENDA":
         // this.salleService.cancel()
