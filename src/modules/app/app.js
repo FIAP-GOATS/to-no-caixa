@@ -6,7 +6,7 @@ import { gSignupInstance } from "../sign-up/signup-factory.js";
 import { gAiInstance } from "../AI/ai-factory.js";
 import { gCustomerInstance } from "../customer/customer-factory.js";
 import { gSupplierInstance } from "../suppliers/supplier-factory.js";
-import { gSupplierRegistrationInstance } from "../registration/suppliers-registration/supplier-registration-factory.js";
+import { gChatInstance } from "../chats/chat-factory.js";
 import { Logger } from '../../logger.js';
 
 export default class App {
@@ -33,16 +33,15 @@ export default class App {
 
   async startup({ db }) {    
     const { companyService } = gCompanyInstance({ db })
-    const { supplierService } = gSupplierInstance({db})
+    const { chatService } = gChatInstance({ db })
+    const { supplierService } = gSupplierInstance({ db })
     const { whatsappService } = await gWhatsappInstance({  });
-    const { signupService } = gSignupInstance({ whatsappService, companyService })
-    const { supplierRegistrationService } = gSupplierRegistrationInstance({whatsappService, supplierService})
+    const { signupService } = gSignupInstance({ whatsappService, companyService, chatService })
     const { aiService } = gAiInstance({ 
       apiKey: process.env.GPT_API_KEY, 
       apiUrl: 'https://api.openai.com/v1/chat/completions'
     }) 
     const { customerService } = gCustomerInstance({ aiService, whatsappService })
-    
 
     const services = {
       companyService,
@@ -50,7 +49,8 @@ export default class App {
       whatsappService,
       aiService,
       customerService,
-      supplierRegistrationService
+      supplierService,
+      chatService
     }
 
     const messageHandler = new MessageHandler({ services })

@@ -1,5 +1,6 @@
-import { response } from "express";
 import { Logger } from "../../logger.js";
+import { createFlowHandlers } from "./flow-handlers.js";
+import { createStateHandlers } from "./state-handlers.js";
 
 export default class MessageHandler {
   constructor({ services }) {
@@ -8,12 +9,27 @@ export default class MessageHandler {
     this.whatsappService = services.whatsappService;
     this.aiService = services.aiService;
     this.customerService = services.customerService;
-    this.supplierRegistrationService = services.supplierRegistrationService
+    this.supplierService = services.supplierService;
+    this.chatService = services.chatService;
+    this.productService = services.productService;
+    this.salleService = services.salleService;
+
+    this.flowHandlers = createFlowHandlers({
+      productService: this.productService,
+      supplierService: this.supplierService,
+      salleService: this.salleService,
+    });
+
+    this.stateHandlers = createStateHandlers({
+      productService: this.productService,
+      supplierService: this.supplierService,
+      signupService: this.signupService
+    });
   }
 
   init() {
-    this.listenWhatsapp()
-    Logger.info("Message Handler initialized successfully")
+    this.listenWhatsapp();
+    Logger.info("Message Handler initialized successfully");
   }
 
   listenWhatsapp() {
@@ -25,41 +41,27 @@ export default class MessageHandler {
   }
 
   async handle({ message }) {
-    const company = await this.companyService.find.byNumber({
-      number: message.from,
-    });
-    if (!company || company.registrationStep != "COMPLETED") {
-      this.signupService.process({ message });
-      return
+    if (!message || !message.body || message.body.trim() === "") {
+      Logger.info('Empty message received, aborting process...');
+      return;
     }
 
-    let response = await this.customerService.redirectCustomer({message})
-    Logger.info(`Redirecting user: ${response.interactionAnalysys}`);
+    //> Check if the message is from a registered phone number 
+    let chat = await this.chatService.find.byPhoneNumber({ phonenumber: message.from }) 
+            ?? await this.chatService.create({ phonenumber: message.from, state: 'WANTS TO SIGNUP' });
 
-    switch(response.interactionAnalysys){
-      case "CADASTRAR PRODUTO":
-        // this.productService.process({ message })
-        break
-      case "CADASTRAR FORNECEDOR":
-        this.supplierRegistrationService.process({message})
-        break
-      case "ABRIR CAIXA":
-        // this.salleService.open({ timestamp })
-        break 
-      case "ATUALIZAR ESTOQUE":
-        break
-      case "VENDER":
-        // this.salleService.process({ message })
-        // Deve haver injeção de contexto, caso o assistente anterior possuia dados sobre a venda.
-        break
-      case "CANCELAR VENDA":
-        // this.salleService.cancel()
-        break
-      case "FECHAR CAIXA":
-        // this.salleService.close({ timestamp })
-        break
-      default:
-        // Lógica de quando o agente não escolher nenhum fluxo
+    //> If chat is in IDLE state, redirect customer to the appropriate flow handler, else handle based on the current state
+    if (chat.state === 'IDLE') {
+      const response = await this.customerService.redirectCustomer({ message });
+      Logger.info(`Redirecting user: ${response.interactionAnalysys}`);
+
+      const handler = this.flowHandlers[response.interactionAnalysys];
+      if (handler) handler(message);
+      else Logger.info("No matching flow handler found.");
+    } else {
+      const handler = this.stateHandlers[chat.state];
+      if (handler) handler(message);
+      else Logger.info(`No state handler for chat state: ${chat.state}`);
     }
   }
 }

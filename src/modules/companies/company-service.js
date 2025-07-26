@@ -16,8 +16,8 @@ export default class CommpanyService {
                 const company = await this.companyRepository.findById(id);
                 return toCamelCase(company)
             },
-            byNumber: async ({ number }) => {
-                const company = await this.companyRepository.findByNumber({ number });
+            byPhoneNumber: async ({ phonenumber }) => {
+                const company = await this.companyRepository.findByPhoneNumber({ phonenumber });
                 return toCamelCase(company)
             },
         }
@@ -33,6 +33,11 @@ export default class CommpanyService {
         const createdCompany = await this.companyRepository.create({ company });
         Logger.info(`Company created: ${createdCompany.id}`);
         return toCamelCase(createdCompany)
+    }
+
+    async linkPhoneNumber({ phonenumber, companyId }) {
+        const linkedPhoneNumber = await this.companyRepository.createPhoneNumberRelation({ phonenumber, companyId })
+        return toCamelCase(linkedPhoneNumber)
     }
 
     

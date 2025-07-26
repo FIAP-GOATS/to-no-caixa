@@ -3,10 +3,11 @@ import signupValidations from "./signup-validations.js";
 import { Logger } from "../../logger.js";
 
 export default class SignupService {
-  constructor({ whatsappService, companyService }) {
+  constructor({ whatsappService, companyService, chatService }) {
     this.whatsappService = whatsappService;
     this.companyService = companyService;
     this.validations = signupValidations;
+    this.chatService = chatService
   }
 
   async sendInvalidAndRetry(step, senderNumber) {
@@ -25,27 +26,19 @@ export default class SignupService {
   }
 
   async process({ message }) {
-
-    //>> This validation handle the situation when the client(a number) made the first interaction with the bot. 
-    //>  For some reason, the whatsapp lib returns a message.body like " ", yes a string with a space or some unknown char.
-    //>  The current code solve it but needs to be replaced in the future for something more robust.
-    //>  Theres a lot of talk about it in github and reddit. Maybe it occurs because the "waiting for this message, please wait" type of message. Its like if whatsapp deal with the two numbers before make the message available.
-    //>> For better analysis, debug the app and simulate the situation to get the entire Message obj and see if there is some info. 
-    if (!message || !message.body || message.body.trim() === ""){
-      Logger.info('Empty message received, aborting process...')
-      return
-    }
-
     const senderNumber = message.from;
     const messageContent = message.body.trim();
 
-    let company = await this.companyService.find.byNumber({
-      number: senderNumber,
+    let company = await this.companyService.find.byPhoneNumber({
+      phonenumber: senderNumber,
     });
     if (!company) {
       company = await this.companyService.create({
-        company: { registrationNumber: senderNumber },
+        company: {  },
       });
+
+      //> Link the phone number to the company as it is a new registration
+      await this.companyService.linkPhoneNumber({ phonenumber: senderNumber, companyId: company.id })
     }
 
     Logger.info(
@@ -221,10 +214,11 @@ export default class SignupService {
               delay_ms: 1500,
             },
           });
-          return;
 
-        // case 'AWAITING_PRODUCTS':
-        //     return { message: this.dictionary.AWAITING_PROUCTS.default_message, completed: true }
+          const chat = await this.chatService.find.byPhoneNumber({  phonenumber: senderNumber})
+          this.chatService.changeState({ id: chat.id, newState: "IDLE" })
+
+          return;
 
         case "COMPLETED":
           this.whatsappService.sendMessage({
@@ -234,14 +228,17 @@ export default class SignupService {
               delay_ms: 1500,
             },
           });
+          this.chatService.changeState({ id: await this.chatService.find.byPhoneNumber({  phonenumber: senderNumber}), newState: "IDLE" })
+          
           return;
+
         default:
           return;
       }
     } catch (error) {
       Logger.error(
-        `Error processing signup for company: ${company.registrationNumber}, step: ${company.registrationStep}`,
-        error
+        `Error processing signup for company: ${company.registrationNumber}, step: ${company.registrationStep} \n` +
+        error.message 
       );
       this.whatsappService.sendMessage({
         content:

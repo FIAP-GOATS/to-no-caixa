@@ -3,9 +3,10 @@ import { Logger } from '../../logger.js';
 
 const gSignupInstance = ({
     whatsappService,
-    companyService
+    companyService, 
+    chatService
 }) => {
-    const signupService = new SignupService({ whatsappService, companyService })
+    const signupService = new SignupService({ whatsappService, companyService, chatService })
     return { signupService }
 }
 
