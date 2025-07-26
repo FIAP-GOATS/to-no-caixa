@@ -4,7 +4,9 @@ import supplierValidation from "./supplier-validations.js"
 import supplierDictionary from "./supplier-dictionary.js";
 
 export default class supplierService{
-    constructor({supplierRepository}){
+    constructor({
+      supplierRepository
+    }){
         this.supplierRepository = supplierRepository;
         this.find = this.#createFind();
     }

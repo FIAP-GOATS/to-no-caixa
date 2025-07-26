@@ -42,7 +42,7 @@ export default class SignupService {
     }
 
     Logger.info(
-      `Processing signup for company: ${company.registrationNumber}, current step: ${company.registrationStep}`
+      `Processing signup for company: ${company.id}, current step: ${company.registrationStep}`
     );
 
     try {

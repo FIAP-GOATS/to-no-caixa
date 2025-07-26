@@ -46,22 +46,27 @@ export default class MessageHandler {
       return;
     }
 
-    //> Check if the message is from a registered phone number 
+    //> Check if the message is from a registered phone number, if not, register it creating a new chat with the state 'WANTS TO SIGNUP'
     let chat = await this.chatService.find.byPhoneNumber({ phonenumber: message.from }) 
             ?? await this.chatService.create({ phonenumber: message.from, state: 'WANTS TO SIGNUP' });
 
-    //> If chat is in IDLE state, redirect customer to the appropriate flow handler, else handle based on the current state
+    //>> If chat is in IDLE state, redirect customer to the appropriate flow handler, else handle based on the current state
+    //> IMPROVE: In the future, replace it for a fully context aware AI service to decide the flow
     if (chat.state === 'IDLE') {
       const response = await this.customerService.redirectCustomer({ message });
       Logger.info(`Redirecting user: ${response.interactionAnalysys}`);
 
       const handler = this.flowHandlers[response.interactionAnalysys];
-      if (handler) handler(message);
-      else Logger.info("No matching flow handler found.");
+      if (handler) 
+        handler(message);
+      else 
+        Logger.info("No matching flow handler found.");
     } else {
       const handler = this.stateHandlers[chat.state];
-      if (handler) handler(message);
-      else Logger.info(`No state handler for chat state: ${chat.state}`);
+      if (handler) 
+        handler(message);
+      else 
+        Logger.info(`No state handler for chat state: ${chat.state}`);
     }
   }
 }

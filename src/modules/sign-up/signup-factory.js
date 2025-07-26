@@ -1,4 +1,4 @@
-import SignupService from "./signupService.js"
+import SignupService from "./signup-service.js"
 import { Logger } from '../../logger.js';
 
 const gSignupInstance = ({
