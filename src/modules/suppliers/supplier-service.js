@@ -53,31 +53,15 @@ export default class supplierService {
   }
 
   async process({ message }) {
-    const senderNumber = message.from;
+    const senderNumber = message.from;''
     const messageContent = message.body.trim();
 
     const flags = supplierDictionary;
+    
+    const chat = await this.chatService.find.byPhoneNumber({ phonenumber: senderNumber });
+    await this.chatService.changeState({ id: chat.id, newState: "WANTS TO ADD SUPPLIER" });
 
-    let chat = await this.chatService.find.byPhoneNumber({
-      phonenumber: senderNumber,
-    });
-
-    // Se não existe chat, cria um novo com estado BEGIN
-    if (!chat) {
-      chat = await this.chatService.create({
-        phonenumber: senderNumber,
-        state: "BEGIN",
-      });
-    }
-
-    switch (chat.state) {
-      case "IDLE":
-        console.log("Idle state");
-        await this.chatService.changeState({ id: chat.id, newState: "BEGIN" });
-        chat = await this.chatService.find.byPhoneNumber({
-          phonenumber: senderNumber,
-        });
-        return
+    switch (supplier.registrationStep) {
       case "BEGIN":
         this.whatsappService.sendMessage({
           content: flags.step.BEGIN.default_message,
