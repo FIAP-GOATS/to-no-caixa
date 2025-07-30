@@ -18,6 +18,7 @@ CREATE TABLE suppliers (
   cnpj VARCHAR(18) UNIQUE,
   cpf VARCHAR(14) UNIQUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  registration_step TEXT NOT NULL DEFAULT 'BEGIN',
   CONSTRAINT chk_document CHECK (cnpj IS NOT NULL OR cpf IS NOT NULL)
 );
 

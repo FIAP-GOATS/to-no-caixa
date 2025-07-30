@@ -53,43 +53,116 @@ export default class supplierService {
   }
 
   async process({ message }) {
-    const senderNumber = message.from;''
+    const senderNumber = message.from;
     const messageContent = message.body.trim();
 
-    const flags = supplierDictionary;
-    
     const chat = await this.chatService.find.byPhoneNumber({ phonenumber: senderNumber });
     await this.chatService.changeState({ id: chat.id, newState: "WANTS TO ADD SUPPLIER" });
 
-    switch (supplier.registrationStep) {
-      case "BEGIN":
-        this.whatsappService.sendMessage({
-          content: flags.step.BEGIN.default_message,
-          to: senderNumber,
+
+    /// Look here
+    let supplier = "Find by? How to verify if supplier exists?";
+    if (!supplier) {
+      /// CHK makes me create a CNPJ
+      supplier = await this.create({
+          supplier: { name: "Fornecedor", cnpj: Date.now().toString(), cpf: null, registrationStep: "BEGIN" },
         });
-        await this.chatService.changeState({ id: chat.id, newState: "AWAITING_NAME"});
-        chat = await this.chatService.find.byPhoneNumber({
-          phonenumber: senderNumber,
-        });
-        return
-      case "AWAITING_NAME":
-        console.log("esperando o nome")
-        await this.chatService.changeState({ id: chat.id, newState: "AWAITING_CPF_OR_CNPJ"});
-        chat = await this.chatService.find.byPhoneNumber({
-          phonenumber: senderNumber,
-        });
-        return
-      case "AWAITING_CPF_OR_CNPJ":
-        console.log("Esperando cpf")
-         await this.chatService.changeState({ id: chat.id, newState: "COMPLETED"});
-        chat = await this.chatService.find.byPhoneNumber({
-          phonenumber: senderNumber,
-        });
-        return
-        
-      default:
-        console.log("Estado desconhecido:", chat.state);
-        break;
+    }
+
+    Logger.info(
+      `Processing supplier registration for supplier: ${supplier.id}, current step: ${supplier.registrationStep}`
+    );
+
+    try {
+      switch (supplier.registrationStep) {
+        case "BEGIN":
+          await this.whatsappService.sendMessage({
+            content: supplierDictionary.step.BEGIN.default_message,
+            to: senderNumber,
+          });
+
+          supplier.registrationStep = "AWAITING_NAME";
+          await this.update({ supplier });
+
+          await this.whatsappService.sendMessage({
+            content: supplierDictionary.step.AWAITING_NAME.default_message,
+            to: senderNumber,
+            opts: { delay_ms: 1500 },
+          });
+          return;
+
+        case "AWAITING_NAME":
+          if (!this.validation.isValidName(messageContent)) {
+            await this.sendInvalidAndRetry("AWAITING_NAME", senderNumber);
+            return;
+          }
+
+          supplier.name = messageContent;
+          supplier.registrationStep = "AWAITING_CPF_OR_CNPJ";
+          await this.update({ supplier });
+
+          await this.whatsappService.sendMessage({
+            content: supplierDictionary.step.AWAITING_CPF_OR_CNPJ.default_message,
+            to: senderNumber,
+            opts: { delay_ms: 1500 },
+          });
+          return;
+
+        case "AWAITING_CPF_OR_CNPJ":
+          let isValidDocument = false;
+
+          if (
+            this.validation.isValidCPF &&
+            this.validation.isValidCPF(messageContent)
+          ) {
+            supplier.cpf = messageContent;
+            supplier.cnpj = null;
+            isValidDocument = true;
+          } else if (
+            this.validation.isValidCNPJ &&
+            this.validation.isValidCNPJ(messageContent)
+          ) {
+            supplier.cnpj = messageContent;
+            supplier.cpf = null;
+            isValidDocument = true;
+          }
+
+          if (!isValidDocument) {
+            await this.sendInvalidAndRetry("AWAITING_CPF_OR_CNPJ", senderNumber);
+            return;
+          }
+
+          supplier.registrationStep = "COMPLETED";
+          await this.update({ supplier });
+
+          await this.whatsappService.sendMessage({
+            content: supplierDictionary.step.COMPLETED.default_message,
+            to: senderNumber,
+            opts: { delay_ms: 1500 },
+          });
+          return;
+
+        case "COMPLETED":
+          await this.whatsappService.sendMessage({
+            content: supplierDictionary.step.COMPLETED.default_message,
+            to: senderNumber,
+            opts: { delay_ms: 1500 },
+          });
+          return;
+
+        default:
+          return;
+      }
+    } catch (error) {
+      Logger.error(
+        `Error processing supplier registration for supplier: ${supplier.id}, step: ${supplier.registrationStep} \n` +
+          error.message
+      );
+      await this.whatsappService.sendMessage({
+        content:
+          "Ocorreu um erro ao processar o cadastro do fornecedor. Por favor, tente novamente mais tarde.",
+        to: senderNumber,
+      });
     }
   }
 }

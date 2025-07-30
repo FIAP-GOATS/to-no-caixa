@@ -29,7 +29,7 @@ export default class SupplierRepository{
                 SET
                     name = COALESCE($1, name),
                     cnpj = COALESCE($2, cnpj),
-                    cpf = COALESCE($3, cnpj)
+                    cpf = COALESCE($3, cpf)
                 WHERE id = $4
                 RETURNING *;
             `,
@@ -37,6 +37,7 @@ export default class SupplierRepository{
                 (supplier?.name || null),
                 (supplier?.cnpj || null),
                 (supplier?.cpf || null),
+                supplier.id
             ]
         });
 
