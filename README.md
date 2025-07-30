@@ -6,7 +6,6 @@ Pequenos negócios enfrentam dificuldades com ERPs tradicionais por serem caros,
 
 - Backend em andamento
 - Frontend a iniciar
-- Modlulo de IA a iniciar
 
 ## Arquitetura
 
@@ -19,6 +18,7 @@ O projeto segue uma arquitetura modular, separando responsabilidades em diferent
 - **modules/sign-up**: Fluxo de cadastro de empresas via WhatsApp.
 - **modules/whatsapp**: Integração com WhatsApp usando [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js).
 - **modules/messages**: Manipulação de mensagens recebidas.
+- **modules/customer**: Lógica de atendimento ao cliente
 - **util.js**: Funções utilitárias.
 ...
 
@@ -62,5 +62,9 @@ O terminal exibirá um QR Code. Escaneie com o WhatsApp do seu celular para aute
 
 - O banco de dados deve estar rodando e acessível conforme as variáveis do .env.
 - O bot só funcionará após autenticação via QR Code.
+
+<br><br>
+
+
 
 

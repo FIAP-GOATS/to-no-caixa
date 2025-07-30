@@ -34,8 +34,8 @@ export default class App {
   async startup({ db }) {    
     const { companyService } = gCompanyInstance({ db })
     const { chatService } = gChatInstance({ db })
-    const { supplierService } = gSupplierInstance({ db })
     const { whatsappService } = await gWhatsappInstance({  });
+    const { supplierService } = gSupplierInstance({ db, whatsappService, chatService })
     const { signupService } = gSignupInstance({ whatsappService, companyService, chatService })
     const { aiService } = gAiInstance({ 
       apiKey: process.env.GPT_API_KEY, 
