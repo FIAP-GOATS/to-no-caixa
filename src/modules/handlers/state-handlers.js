@@ -2,5 +2,5 @@
 export const createStateHandlers = ({ signupService, productService, supplierService }) => ({
   "WANTS TO SIGNUP": (message) => signupService.process?.({ message }),
   "WANTS TO ADD PRODUCT": (message) => productService.process?.({ message }),
-  "WANTS TO ADD SUPPLIER": (message) => supplierService.process?.({ message }),
+  "WANTS TO ADD SUPPLIER": (message, chat) => supplierService.process?.({ message, chat }),
 });

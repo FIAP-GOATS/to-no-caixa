@@ -12,14 +12,46 @@ CREATE TABLE companies (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE company_numbers (
+  phonenumber VARCHAR(30),
+  company_id INTEGER NOT NULL,
+  FOREIGN KEY (company_id) REFERENCES companies(id)
+);
+
+CREATE TABLE chats (
+  id SERIAL PRIMARY KEY,
+  phonenumber VARCHAR(30),
+  state TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE suppliers (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   cnpj VARCHAR(18) UNIQUE,
   cpf VARCHAR(14) UNIQUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  registration_step TEXT NOT NULL DEFAULT 'BEGIN',
   CONSTRAINT chk_document CHECK (cnpj IS NOT NULL OR cpf IS NOT NULL)
+);
+
+CREATE TABLE supplier_drafts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT,
+  cnpj VARCHAR(18) UNIQUE,
+  cpf VARCHAR(14) UNIQUE,
+  chat_id INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  registration_step TEXT NOT NULL DEFAULT 'BEGIN',
+  status TEXT NOT NULL DEFAULT 'active',
+  FOREIGN KEY (chat_id) REFERENCES chats(id)
+);
+
+CREATE TABLE companies_suppliers (
+  company_id INTEGER NOT NULL,
+  supplier_id INTEGER NOT NULL,
+  FOREIGN KEY (company_id) REFERENCES companies(id),
+  FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
 );
 
 CREATE TABLE products (
@@ -31,19 +63,6 @@ CREATE TABLE products (
   supplier_name VARCHAR(100),
   supplier_id INTEGER,
   FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
-);
-
-CREATE TABLE chats (
-  id SERIAL PRIMARY KEY,
-  phonenumber VARCHAR(30),
-  state TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE company_numbers (
-  phonenumber VARCHAR(30),
-  company_id INTEGER NOT NULL,
-  FOREIGN KEY (company_id) REFERENCES companies(id)
 );
 
 -- CREATE TABLE messages (

@@ -10,6 +10,7 @@ export default class supplierService {
     this.chatService = chatService;
     this.validation = supplierValidation;
     this.find = this.#createFind();
+    this.draft = this.#createDraft();
   }
 
   #createFind() {
@@ -23,6 +24,23 @@ export default class supplierService {
         return supplier ? toCamelCase(supplier) : null;
       },
     };
+  }
+
+  #createDraft() {
+    return {
+      getActive: async ({ chatId }) => {
+        const activeSupplierDraft = await this.supplierRepository.getActiveDraft({ chatId })
+        return activeSupplierDraft ? toCamelCase(activeSupplierDraft) : null;
+      },
+      create: async ({ supplierDraft }) => {
+        const draft = await this.supplierRepository.createDraft({ supplierDraft })
+        return draft ? toCamelCase(draft) : null;
+      },
+      update: async ({ supplierDraft }) => {
+        const draft = await this.supplierRepository.updateDraft({ supplierDraft })
+        return draft ? toCamelCase(draft) : null;
+      }
+    }
   }
 
   async update({ supplier }) {
@@ -52,42 +70,32 @@ export default class supplierService {
     });
   }
 
-  async process({ message }) {
+  async process({ message, chat}) {
     const senderNumber = message.from;
     const messageContent = message.body.trim();
 
-    const chat = await this.chatService.find.byPhoneNumber({ phonenumber: senderNumber });
-    await this.chatService.changeState({ id: chat.id, newState: "WANTS TO ADD SUPPLIER" });
-
-
-    /// Look here
-    let supplier = "Find by? How to verify if supplier exists?";
-    if (!supplier) {
-      /// CHK makes me create a CNPJ
-      supplier = await this.create({
-          supplier: { name: "Fornecedor", cnpj: Date.now().toString(), cpf: null, registrationStep: "BEGIN" },
-        });
-    }
-
-    Logger.info(
-      `Processing supplier registration for supplier: ${supplier.id}, current step: ${supplier.registrationStep}`
-    );
-
+    let supplierDraft = await this.draft.getActive({ chatId: chat.id })
+    if(!supplierDraft)
+      supplierDraft = await this.draft.create({ supplierDraft: { chatId: chat.id } })
+      
     try {
-      switch (supplier.registrationStep) {
+      switch (supplierDraft.registrationStep) {
         case "BEGIN":
-          await this.whatsappService.sendMessage({
+          this.whatsappService.sendMessage({
             content: supplierDictionary.step.BEGIN.default_message,
             to: senderNumber,
+            messageRef: message,
+            opts: { delay_ms: 3000 }
           });
 
-          supplier.registrationStep = "AWAITING_NAME";
-          await this.update({ supplier });
+          supplierDraft.registrationStep = "AWAITING_CPF_OR_CNPJ";
+          supplierDraft = await this.draft.update({ supplierDraft })
 
-          await this.whatsappService.sendMessage({
-            content: supplierDictionary.step.AWAITING_NAME.default_message,
+          this.whatsappService.sendMessage({
+            content: supplierDictionary.step.AWAITING_CPF_OR_CNPJ.default_message,
             to: senderNumber,
-            opts: { delay_ms: 1500 },
+            messageRef: message,
+            opts: { delay_ms: 5000 },
           });
           return;
 
@@ -97,12 +105,21 @@ export default class supplierService {
             return;
           }
 
-          supplier.name = messageContent;
-          supplier.registrationStep = "AWAITING_CPF_OR_CNPJ";
-          await this.update({ supplier });
+          supplierDraft.name = messageContent;
+          supplierDraft.registrationStep = "COMPLETED";
+          supplierDraft.status = "archived";
+          await this.draft.update({ supplierDraft });
+          const supplier = {
+            name: supplierDraft.name,
+            cnpj: supplierDraft.cnpj,
+            cpf: supplierDraft.cpf
+          }
+          await this.create({ supplier })
+
+          await this.chatService.changeState({ id: chat.id, newState: "IDLE" })
 
           await this.whatsappService.sendMessage({
-            content: supplierDictionary.step.AWAITING_CPF_OR_CNPJ.default_message,
+            content: supplierDictionary.step.COMPLETED.default_message,
             to: senderNumber,
             opts: { delay_ms: 1500 },
           });
@@ -115,15 +132,15 @@ export default class supplierService {
             this.validation.isValidCPF &&
             this.validation.isValidCPF(messageContent)
           ) {
-            supplier.cpf = messageContent;
-            supplier.cnpj = null;
+            supplierDraft.cpf = messageContent;
+            supplierDraft.cnpj = null;
             isValidDocument = true;
           } else if (
             this.validation.isValidCNPJ &&
             this.validation.isValidCNPJ(messageContent)
           ) {
-            supplier.cnpj = messageContent;
-            supplier.cpf = null;
+            supplierDraft.cnpj = messageContent;
+            supplierDraft.cpf = null;
             isValidDocument = true;
           }
 
@@ -132,11 +149,11 @@ export default class supplierService {
             return;
           }
 
-          supplier.registrationStep = "COMPLETED";
-          await this.update({ supplier });
+          supplierDraft.registrationStep = "AWAITING_NAME";
+          await this.draft.update({ supplierDraft });
 
           await this.whatsappService.sendMessage({
-            content: supplierDictionary.step.COMPLETED.default_message,
+            content: supplierDictionary.step.AWAITING_NAME.default_message,
             to: senderNumber,
             opts: { delay_ms: 1500 },
           });
@@ -155,7 +172,7 @@ export default class supplierService {
       }
     } catch (error) {
       Logger.error(
-        `Error processing supplier registration for supplier: ${supplier.id}, step: ${supplier.registrationStep} \n` +
+        `Error processing supplier registration for supplier: ${supplierDraft.id}, step: ${supplierDraft.registrationStep} \n` +
           error.message
       );
       await this.whatsappService.sendMessage({

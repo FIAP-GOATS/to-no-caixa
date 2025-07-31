@@ -21,14 +21,24 @@ export default class WhatsappService {
     async sendMessage({
         content,
         to,
+        messageRef,
         opts = { }
     }) {
         const {
-            delay_ms=0
+            delay_ms=0,
         } = opts
 
-        if (delay_ms > 0) 
+        if (delay_ms > 0) {
+            let chat = null
+            if(messageRef) {
+                chat = await messageRef.getChat();
+                chat.sendStateTyping();
+            }
             await this.helpers.sleep(delay_ms);
+            if(chat)
+                chat.clearState()
+                
+        }
         this.client.sendMessage(to, content.toString())
         Logger.info(`Message sent to ${to}: ${content}`);
     }

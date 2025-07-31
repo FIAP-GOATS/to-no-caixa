@@ -18,6 +18,7 @@ export default class MessageHandler {
       productService: this.productService,
       supplierService: this.supplierService,
       salleService: this.salleService,
+      chatService: this.chatService
     });
 
     this.stateHandlers = createStateHandlers({
@@ -58,13 +59,13 @@ export default class MessageHandler {
 
       const handler = this.flowHandlers[response.interactionAnalysys];
       if (handler) 
-        handler(message);
+        handler(message, chat);
       else 
         Logger.info("No matching flow handler found.");
     } else {
       const handler = this.stateHandlers[chat.state];
       if (handler) 
-        handler(message);
+        handler(message, chat);
       else 
         Logger.info(`No state handler for chat state: ${chat.state}`);
     }
