@@ -57,10 +57,8 @@ const prompts = {
            CADASTRAR PRODUTO -> Para acionar o fluxo de cadastro de produtos
 		   CADASTRAR FORNECEDOR -> Para acionar o fluxo de cadastro de fornecedor
            ATUALIZAR ESTOQUE -> Para acionar o fluxo de atualização de estoque
-		   ABRIR CAIXA -> Para acionar o fluxo de abertura de caixa
 		   VENDER -> Para acionar o fluxo de nova venda 
 		   CANCELAR VENDA -> Para acionar o fluxo de cancelamento de venda
-		   FECHAR CAIXA -> Para acionar o fluxo de fechamento de caixa
 		   NONE -> Para quando o fluxo do agente não definir qual função acionar
         2. Não faça observações, não faça comentários, responda ESTRITAMENTE com as opções listadas acima
         3. Explicações das funções não são válidos

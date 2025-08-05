@@ -8,6 +8,7 @@ import { gCustomerInstance } from "../customer/customer-factory.js";
 import { gSupplierInstance } from "../suppliers/supplier-factory.js";
 import { gChatInstance } from "../chats/chat-factory.js";
 import { Logger } from '../../logger.js';
+import { gProductInstance } from "../products/products-factory.js";
 
 export default class App {
   constructor() {
@@ -36,6 +37,7 @@ export default class App {
     const { chatService } = gChatInstance({ db })
     const { whatsappService } = await gWhatsappInstance({  });
     const { supplierService } = gSupplierInstance({ db, whatsappService, chatService })
+    const {productService } = gProductInstance({db, whatsappService, chatService})
     const { signupService } = gSignupInstance({ whatsappService, companyService, chatService })
     const { aiService } = gAiInstance({ 
       apiKey: process.env.GPT_API_KEY, 
@@ -50,7 +52,8 @@ export default class App {
       aiService,
       customerService,
       supplierService,
-      chatService
+      chatService,
+      productService
     }
 
     const messageHandler = new MessageHandler({ services })

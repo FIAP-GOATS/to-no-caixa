@@ -58,12 +58,30 @@ CREATE TABLE products (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   inventory INT NOT NULL DEFAULT 0,
-  cost_price DECIMAL(10, 2) NOT NULL,
+  cost_price DECIMAL(10, 2),
   sale_price DECIMAL(10, 2) NOT NULL,
   supplier_name VARCHAR(100),
   supplier_id INTEGER,
   FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
 );
+
+CREATE TABLE products_drafts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT,
+  inventory INT DEFAULT 0,
+  cost_price DECIMAL(10, 2),
+  sale_price DECIMAL(10, 2) ,
+  chat_id INTEGER NOT NULL,
+  supplier_name VARCHAR(100),
+  supplier_id INTEGER,
+  registration_step TEXT NOT NULL DEFAULT 'BEGIN',
+  status TEXT NOT NULL DEFAULT 'active',
+  FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+);
+
+
+
+
 
 -- CREATE TABLE messages (
 --   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
