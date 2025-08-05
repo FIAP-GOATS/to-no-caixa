@@ -37,10 +37,11 @@ export default class WhatsappService {
             await this.helpers.sleep(delay_ms);
             if(chat)
                 chat.clearState()
-                
         }
+        //if(to === '553592172728@c.us') {
         this.client.sendMessage(to, content.toString())
         Logger.info(`Message sent to ${to}: ${content}`);
+        //}
     }
 
     helpers = {

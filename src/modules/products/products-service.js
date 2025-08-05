@@ -89,14 +89,14 @@ export default class ProductsService {
     }
 
     try {
-      switch (productDraft.registration_step) {
+      switch (productDraft.registrationStep) {
         case "BEGIN":
           this.whatsappService.sendMessage({
             content: productsDictionary.step.BEGIN.default_message,
             to: senderNumber,
             messageRef: message,
             opts: {
-              delay_ms: 1500,
+              delay_ms: 3000 ,
             },
           });
 
@@ -108,7 +108,7 @@ export default class ProductsService {
             to: senderNumber,
             messageRef: message,
             opts: {
-              delay_ms: 1500,
+              delay_ms: 5000,
             },
           });
           return;
