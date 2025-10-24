@@ -1,3 +1,5 @@
+/// :: Validations to avoid emojis or other kind of unwanted characters in product fields.
+
 export default {
   isValidName(name) {
     if (typeof name !== "string") return false;
@@ -7,7 +9,8 @@ export default {
 
   isValidInventory(inventory) {
     if (typeof inventory !== "string") return false;
-    return Number.isInteger(inventory) && inventory >= 0;
+    const num = Number(inventory);
+    return Number.isInteger(num) && num >= 0;
   },
 
   isValidCostPrice(costPrice) {
@@ -31,7 +34,9 @@ export default {
       this.isValidInventory(product.inventory) &&
       this.isValidCostPrice(product.cost_price) &&
       this.isValidSalePrice(product.sale_price) &&
-      (product.supplier_name ? this.isValidSupplierName(product.supplier_name) : true)
+      (product.supplier_name
+        ? this.isValidSupplierName(product.supplier_name)
+        : true)
     );
-  }
+  },
 };
