@@ -79,6 +79,15 @@ CREATE TABLE products_drafts (
   FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
 );
 
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  type INTEGER NOT NULL,
+  company_id INTEGER,
+  FOREIGN KEY (company_id) REFERENCES companies(id)
+);
 
 
 

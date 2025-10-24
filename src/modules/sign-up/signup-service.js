@@ -3,11 +3,12 @@ import signupValidations from "./signup-validations.js";
 import { Logger } from "../../logger.js";
 
 export default class SignupService {
-  constructor({ whatsappService, companyService, chatService }) {
+  constructor({ whatsappService, companyService, chatService, userService }) {
     this.whatsappService = whatsappService;
     this.companyService = companyService;
     this.validations = signupValidations;
-    this.chatService = chatService
+    this.chatService = chatService;
+    this.userService = userService
   }
 
   async sendInvalidAndRetry(step, senderNumber) {
@@ -207,8 +208,33 @@ export default class SignupService {
           company.registrationStep = "COMPLETED";
           await this.companyService.update({ company });
 
-          this.whatsappService.sendMessage({
+          const tempPassword = 'tempPassword'
+
+          await this.userService.create({
+            name: company.name,
+            email: company.email,
+            password: tempPassword,
+            companyId: company.id
+          })
+
+          await this.whatsappService.sendMessage({
             content: signupDictionary.step.COMPLETED.default_message,
+            to: senderNumber,
+            opts: {
+              delay_ms: 1500,
+            },
+          });
+
+          await this.whatsappService.sendMessage({
+            content: "Aqui esta o seu login temporario para entrar na plataforma: ",
+            to: senderNumber,
+            opts: {
+              delay_ms: 1500,
+            },
+          });
+
+          await this.whatsappService.sendMessage({
+            content: `email: ${company.email}\nsenha: ${tempPassword}`,
             to: senderNumber,
             opts: {
               delay_ms: 1500,

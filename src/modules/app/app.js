@@ -8,7 +8,11 @@ import { gCustomerInstance } from "../customer/customer-factory.js";
 import { gSupplierInstance } from "../suppliers/supplier-factory.js";
 import { gChatInstance } from "../chats/chat-factory.js";
 import { Logger } from '../../logger.js';
+import express from 'express';
+import Router from '../routes/router.js';
 import { gProductInstance } from "../products/products-factory.js";
+import { gUserInstance } from "../users/user-factory.js";
+import AuthService from "../auth/auth-service.js";
 
 export default class App {
   constructor() {
@@ -34,11 +38,21 @@ export default class App {
 
   async startup({ db }) {    
     const { companyService } = gCompanyInstance({ db })
+
     const { chatService } = gChatInstance({ db })
+
     const { whatsappService } = await gWhatsappInstance({  });
+
     const { supplierService } = gSupplierInstance({ db, whatsappService, chatService })
+
     const {productService } = gProductInstance({db, whatsappService, chatService})
-    const { signupService } = gSignupInstance({ whatsappService, companyService, chatService })
+
+    const authService = new AuthService()
+
+    const { userService } = gUserInstance({ db, authService })
+
+    const { signupService } = gSignupInstance({ whatsappService, companyService, chatService, userService })
+
     const { aiService } = gAiInstance({ 
       apiKey: process.env.GPT_API_KEY, 
       apiUrl: 'https://api.openai.com/v1/chat/completions'
@@ -58,6 +72,19 @@ export default class App {
 
     const messageHandler = new MessageHandler({ services })
     messageHandler.init()
+
+    // create and start HTTP server
+    const httpApp = express()
+    httpApp.use(express.json())
+
+    const router = new Router({ app: httpApp, services: { userService } })
+    router.startup()
+
+    const port = process.env.PORT || 3333
+    httpApp.listen(port, () => {
+      Logger.info(`HTTP server listening on port ${port}`)
+    })
+
 
     Logger.info('Application started successfully');
   }

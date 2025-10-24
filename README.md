@@ -65,6 +65,18 @@ O terminal exibirá um QR Code. Escaneie com o WhatsApp do seu celular para aute
 
 <br><br>
 
+## Rotas
+
+```
+    Autenticação
+    POST dominio/users/token
+    -H "Content-Type: application/json" \
+    -d '{"user":{"email":"", "password":""}}'
+
+    User
+    GET dominio/users
+    "Authorization: <token>" dominio/users
+
 
 
 
