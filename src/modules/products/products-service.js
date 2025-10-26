@@ -82,9 +82,10 @@ export default class ProductsService {
     let productDraft = await this.draft.getActive({ chatId: chat.id });
     if (!productDraft) {
       productDraft = await this.draft.create({
-        productDraft: { chat_id: chat.id,
-                        registration_step: "BEGIN",
-         },
+        productDraft: {
+          chat_id: chat.id,
+          registration_step: "BEGIN",
+        },
       });
     }
 
@@ -96,7 +97,7 @@ export default class ProductsService {
             to: senderNumber,
             messageRef: message,
             opts: {
-              delay_ms: 3000 ,
+              delay_ms: 3000,
             },
           });
 
@@ -180,10 +181,10 @@ export default class ProductsService {
 
           const product = {
             name: productDraft.name,
-            cost_price: productDraft.cost_price,
-            sale_price: productDraft.sale_price,
+            cost_price: productDraft.costPrice,
+            sale_price: productDraft.salePrice,
             inventory: productDraft.inventory,
-            supplier_name: productDraft.supplier_name,
+            supplier_name: productDraft.supplierName,
           };
           await this.create({ product });
 
@@ -195,12 +196,20 @@ export default class ProductsService {
               delay_ms: 1500,
             },
           });
+
+          await this.whatsappService.sendMessage({
+            content: `${product.name}\n- Custo: R$${product.cost_price}\n- Preço de venda: R$${product.sale_price}\n- Estoque: ${product.inventory}`.replaceAll('.', ','),
+            to: senderNumber,
+            opts: {
+              delay_ms: 1500,
+            },
+          });
           return;
       }
     } catch (error) {
       Logger.error(
         `Error processing supplier registration for supplier: ${productDraft.id}, step: ${productDraft.registrationStep} \n` +
-          error.message
+        error.message
       );
       await this.whatsappService.sendMessage({
         content:

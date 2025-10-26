@@ -14,13 +14,19 @@ export default {
   },
 
   isValidCostPrice(costPrice) {
-    if (typeof costPrice !== "string") return false;
-    return costPrice >= 0;
+    // accept string like "5,00" or "5.00" or numeric values
+    if (typeof costPrice !== "string" && typeof costPrice !== 'number') return false;
+    const normalized = String(costPrice).replace(',', '.').trim();
+    const num = Number(normalized);
+    return Number.isFinite(num) && num >= 0;
   },
 
   isValidSalePrice(salePrice) {
-    if (typeof salePrice !== "string") return false;
-    return salePrice >= 0;
+    // accept string like "5,00" or "5.00" or numeric values
+    if (typeof salePrice !== "string" && typeof salePrice !== 'number') return false;
+    const normalized = String(salePrice).replace(',', '.').trim();
+    const num = Number(normalized);
+    return Number.isFinite(num) && num >= 0;
   },
 
   isValidSupplierName(supplierName) {
