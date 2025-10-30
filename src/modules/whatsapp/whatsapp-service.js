@@ -7,7 +7,7 @@ export default class WhatsappService {
     }) {
         this.messageRepository = messageRepository;
         this.client = client
-        
+
         this.name = 'whatsapp-service';
         this.version = '1.0.0';
         this.description = 'WhatsApp service for managing WhatsApp interactions and configurations';
@@ -22,26 +22,26 @@ export default class WhatsappService {
         content,
         to,
         messageRef,
-        opts = { }
+        opts = {}
     }) {
         const {
-            delay_ms=0,
+            delay_ms = 0,
         } = opts
 
         if (delay_ms > 0) {
             let chat = null
-            if(messageRef) {
+            if (messageRef) {
                 chat = await messageRef.getChat();
                 chat.sendStateTyping();
             }
             await this.helpers.sleep(delay_ms);
-            if(chat)
+            if (chat)
                 chat.clearState()
         }
-        if(to === '553592172728@c.us') {
-            this.client.sendMessage(to, content.toString())
-            Logger.info(`Message sent to ${to}: ${content}`);
-        }
+        //if(to === '553592172728@c.us') {
+        this.client.sendMessage(to, content.toString())
+        Logger.info(`Message sent to ${to}: ${content}`);
+        //}
     }
 
     helpers = {
@@ -49,7 +49,7 @@ export default class WhatsappService {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
     }
-    
+
 
 
 }
